@@ -616,7 +616,10 @@ class SphinxQuerySet(object):
                     r['id'] = unicode(r['id'])
                     objcache.setdefault(ct, {})[r['id']] = None
                 for ct in objcache:
-                    model_class = ContentType.objects.get(pk=ct).model_class()
+                    app_label = ct.split('|')[0]
+                    model_name = ct.split('|')[1]
+                    content_type = ContentType.objects.get(app_label=app_label, model=model_name)
+                    model_class = content_type.model_class()
                     pks = getattr(model_class._meta, 'pks', [model_class._meta.pk])
 
                     if results['matches'][0]['attrs'].get(pks[0].column):
